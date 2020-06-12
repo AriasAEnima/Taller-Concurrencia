@@ -9,8 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 
 /**
@@ -25,9 +24,8 @@ public class ServerHttp implements Runnable {
     private ExecutorService executor;
     private  ServerSocket serverSocket=null;
     
-    private ServerHttp(){
-        bandera=true;
-        executor = Executors.newFixedThreadPool(7);          
+    private ServerHttp(){      
+        this(7);         
     }
     
      private ServerHttp(int n){
@@ -43,35 +41,32 @@ public class ServerHttp implements Runnable {
             System.err.println("Could not listen on port: 35000.");
             System.exit(1);
         }     
-        //System.out.println("Listo para recibir ...");
-        int no=1;
+        //System.out.println("Listo para recibir ...");       
         while(bandera){           
-            try {
-                //System.out.println("Esperando ...");                
-                Socket clientSocket = serverSocket.accept();
-                Runnable process = new ClientSocketProcess(clientSocket);
-                executor.execute(process);
-                synchronized(lock){
-                   // System.out.println("Ya mande el proceso ..."+no);
-                    no++;                    
+            synchronized(lock){
+                try {
+                    //System.out.println("Esperando ...");                
+                    Socket clientSocket = serverSocket.accept();
+                    Runnable process = new ClientSocketProcess(clientSocket);
+                    executor.execute(process);
+                } catch (IOException ex) {
+                    System.err.println(ex.getMessage()+": No se pudo iniciar el socket o este fue cerrado con proposito");
                 }
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage()+": No se pudo iniciar el socket o este fue cerrado con proposito"); 
             }
-        } 
+        }            
+    }
+    
+      
+    public void stop() {
+        bandera = false;
         executor.shutdown();	
         while (!executor.isTerminated()) {
             // Espero a que terminen de ejecutarse todos los procesos       	
         }         
-    }
-    
-    public void stop() {
-        bandera = false;
         try {
-            if (serverSocket != null) {
-                serverSocket.close();
-            }
-        } catch (IOException ignored) {
+            serverSocket.close();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage()+": No se pudo iniciar el socket o este fue cerrado con proposito"); 
         }
     }
 
