@@ -155,7 +155,7 @@ public class ServerTest {
             s.start();
             List<Thread> hilosBrowser=new ArrayList<>();
             List<BrowserForTest> browsersForTest=new ArrayList<>();
-            for (int i=1; i<=200 ; i++){
+            for (int i=1; i<=500 ; i++){
                 BrowserForTest b =new BrowserForTest("hugeimg.jpg");                
                 browsersForTest.add(b);
                 Thread t = new Thread(b);
@@ -192,7 +192,7 @@ public class ServerTest {
             s.start();
             List<Thread> hilosBrowser=new ArrayList<>();
             List<BrowserForTest> browsersForTest=new ArrayList<>();
-            for (int i=1; i<=200 ; i++){
+            for (int i=1; i<=500 ; i++){
                 BrowserForTest b =new BrowserForTest("hugeimg.jpg");                
                 browsersForTest.add(b);
                 Thread t = new Thread(b);
