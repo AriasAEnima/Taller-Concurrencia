@@ -4,46 +4,63 @@
  * and open the template in the editor.
  */
 package edu.escuelaing.arsw.tallerconcurrencia.http;
-import edu.escuelaing.arsw.tallerconcurrencia.http.writer.ResourceChooser;
-import edu.escuelaing.arsw.tallerconcurrencia.http.writer.ResourceWriter;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 /**
  *
  * @author J. Eduardo Arias
  */
-public class ServerHttp {
+public class ServerHttp implements Runnable {
     private static ServerHttp instance;
+    private static Object lock=new Object();
+    private boolean bandera;
+    private ExecutorService executor;
     
-    private ServerHttp(){
-        ServerSocket serverSocket = null;        
-        try {
+
+    @Override
+    public void run() {
+        ServerSocket serverSocket=null;
+        try {           
             serverSocket = new ServerSocket(35000);            
         } catch (IOException e) {
             System.err.println("Could not listen on port: 35000.");
             System.exit(1);
-        }       
-        while(true){
-            Socket clientSocket = null;
-            ResourceWriter rw=null;
+        }     
+        System.out.println("Listo para recibir ...");
+        long init = System.currentTimeMillis();
+        int no=1;
+        while(bandera){           
             try {
-                System.out.println("Listo para recibir ...");
-                clientSocket = serverSocket.accept();            
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String path=getPath(in);    
-                rw = ResourceChooser.choose(path); 
-                rw.write(path, clientSocket);                    
-                in.close();
-                clientSocket.close();              
-            } catch (Exception ex) {
-                System.err.println(ex.getMessage()+": Error en el servidor");            
+                System.out.println("Esperando ...");
+                Socket clientSocket = serverSocket.accept();
+                Runnable process = new ClientSocketProcess(clientSocket);
+                executor.execute(process);
+                synchronized(lock){
+                    System.out.println("Ya respondi ..."+no);
+                    no++;                    
+                }
+            } catch (IOException ex) {
+                System.err.println(ex.getMessage()+": No se pudo iniciar el socket"); 
             }
         }     
+        executor.shutdown();	
+        while (!executor.isTerminated()) {
+            // Espero a que terminen de ejecutarse todos los procesos       	
+        }
+        long fin = System.currentTimeMillis();	// Instante final del procesamiento
+        System.out.println("Tiempo total de procesamiento: "+(fin-init)/1000+" Segundos");
+    }
+    
+    private ServerHttp(){
+        bandera=true;
+        executor = Executors.newFixedThreadPool(2);          
     }
     
     /**
@@ -52,32 +69,14 @@ public class ServerHttp {
      * @throws IOException si algo ocurre con los sockets
      */
     public static void main(String[] args) {      
-        runInstance();
+        getInstance().run();
     }    
     
-    public static void runInstance(){      
+    public static ServerHttp getInstance(){      
         if (instance==null){
-            instance=new ServerHttp();
+            instance=new ServerHttp();               
         }
+        return instance;
     }  
-    /**
-     * Captura el path de una peticion GET
-     * @param in Buffer del Socket del Cliente
-     * @return el path del archivo.
-     * @throws IOException si no es posible leer el buffer
-     */
-    public static String getPath(BufferedReader in) throws IOException{
-        String inputLine,path="";
-        while ((inputLine = in.readLine()) != null) {
-             System.out.println("Received: " + inputLine);
-             if (inputLine.contains("GET")) {
-                 path=inputLine.split(" ")[1];                                             
-             }
-             if (!in.ready()) {
-                 break;
-             }
-        }
-        return path;
-    }
    
 }

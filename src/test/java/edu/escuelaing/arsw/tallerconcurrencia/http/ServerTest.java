@@ -25,7 +25,7 @@ public class ServerTest {
        Thread b= new Thread(new Runnable() {
            @Override
            public void run() {
-               new BrowserForTest("indexs.ico"); 
+               new BrowserForTest("index.html"); 
            }
        });     
        b.start();
