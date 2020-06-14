@@ -70,7 +70,13 @@ Y podremos ver como el servidor le llega peticiones y el Browser renderiza corre
 Haciendo un recorrido de arriba hacia abajo:
 * Se aplico un patron Singleton perezoso en el ServerHttp que solo cambia de instancia si se requiere un numero de hilos diferentes, sin embargo siempre será una única instancia.
 * El server implementa Runnable para que en las pruebas no bloquee (pudo haberse creado una clase anonima Runnable con el Server pero opte por esto.).
-* El server Http utiliza un pool de Threads Fixed (actualmente fijado en 7 si no se da este parametro). *Fixed con el fin de hacer pruebas interesantes cambiando este numero*
+* El funcionanmiento del server es un patron "Thread Pool".
+* El server Http utiliza un pool de Threads Fixed (actualmente fijado en 7 si no se da este parametro). *Fixed con el fin de hacer pruebas interesantes cambiando este numero*.
+
+**Implementacion del server con hilos:**  
+Podemos observar que el una vez se termina la espera una petición se crea un hilo y se inicia, no se espera que termine de procesar esta peticion, en cambio se espera la siguiente petición y se crea otro hilo para que corra en parelelo si es necesario con peticiones anteriores.
+
+![Sever](imagenesgit/server.PNG)
 
 ![Constuctor](imagenesgit/constructor.PNG)
 * Se creara un ClientSocketProcess por cada peticion particular que llegue.
@@ -78,41 +84,41 @@ Haciendo un recorrido de arriba hacia abajo:
 * Los ClientSocketProcess utilizaran los servicios de ResourceChooser para escoger un ResourceWriter y ejecutarlo.
 * Se agregó un Writer de error que puede ser utilizado por los otros cuando no encuentren el archivo o desde el chooser si no se soporta el tipo de archivo.
 
+![Map](imagenesgit/map.PNG)
 
-
-![Map](imagenes/map.PNG)
-
-Esta implementación nos permite agregar mas ResourceWriters , lo agregamos en el map de Chooser y EchoServerHttp seguirá funcionando a la perfección.
+Al igual que el taller anterior ([Taller Networking](https://github.com/AriasAEnima/taller-networking)) , nos sigue prestando las mismas ventajas, ya que adicionamos patrones o classes manteniendo los patrones anteriores.
 
 
 
-### Pruebas especificas
-Hice dos pruebas:
-### 1) Escribí un código html, js y agregué una imagen.
-Ingresamos la URL
-```
-> localhost:35000/prueba/index.html
-```
-Como podemos ver pide 3 recursos.
+## Pruebas especificas:
+#### Circle CI
+
+[![CircleCI](https://circleci.com/gh/AriasAEnima/Taller-Concurrencia.svg?style=svg)](https://circleci.com/gh/AriasAEnima/Taller-Concurrencia)
+
+Se realizo dos clases de pruebas una utilizando Runnables como Browsers y otra como Callables. (Son muy parecidas).
+
+La diferencia entre estas es como logre capturar el posible error (con una bandera o un Array de Future <"String"> ), en las Runnables les di start manualmente y en las Callables utilice un invokeAll (newCachedThreadPool) para iniciarlos.
+
+Los test consisten en cambiar el numero de Browser (200 o 500) pidiendo como recurso una imagen de 6MB y cambiar los hilos que atienden en el Server (1 o 7); También verificar que el Servidor da una respuesta negativa (por que no se encuentra el recurso o no se soporta) y en una prueba pequeña que podemos observar la respuesta del servidor de 3 tipos de archivos, (jpg, html y js).
+
+Opte por que los browser no imprimieran la respuesta (excepto en la prueba pequeña), debido a que queria verificar la diferencia de tiempo del servidor cambiando los hilos que antendian para responder, no de los browser (clientes) para leer la respuesta.
 
 
-![Test](imagenes/prueba1.PNG)
+Aqui podemos el estilo de una prueba Callable:
 
-Y pide un cuarto que no implementamos
+En esta el servidor tendrá  7 hilos para atender 500 peticiones.
 
-![Test](imagenes/nosoportado.PNG)
+![Test](imagenesgit/test.PNG)
 
-### 2) Descargue un paquete completo de una Pagina Web y mire que tal lo mostraba.
+## Comparando Hilos en el Server:
 
-Ingresamos la URL
-```
-> localhost:35000/index.html
-```
-
-Como podemos ver pide muchos recursos.
+Me pareció una buena oportunidad de comprobar la conveniencia de aumentar hilos en un proceso, y pude notar por mi mismo que también aumentar indiscriminadamente los hilos no es una buena practica, ya que es posible que cueste mas instanciar y correr muchos hilos que la mismas tareas que deberían realizar. Y que posiblemente varié dependiendo del hardware y la peso de estas tareas.
 
 
-![Test](imagenes/prueba2.PNG)
+![Imagen200](imagenesgit/200.PNG)
+
+![Imagen500](imagenesgit/500.PNG)
+
 
 
 ## Documentación:
@@ -126,19 +132,9 @@ Se encuentra en la carpeta
 
 The Thread Pool Pattern - DHolness. (2018, 14 mayo). Recuperado 13 de junio de 2020, de https://medium.com/@dholnessii/the-thread-pool-pattern-7227eb9ec2b6
 
+Richard. (2017, 2 junio). Multitarea e Hilos en Java con ejemplos II (Runnable & Executors). Recuperado 12 de junio de 2020, de https://jarroba.com/multitarea-e-hilos-en-java-con-ejemplos-ii-runnable-executors/
+
+
 ## Licencia
 
 This project is licensed under the MIT License  - see the [LICENSE](LICENSE) file for details
-
-
-
-## Pruebas
-
-
-![Imagen200](imagenesgit/200.PNG)
-
-![Imagen500](imagenesgit/500.PNG)
-
-## Circle CI :
-
-[![CircleCI](https://circleci.com/gh/AriasAEnima/Taller-Concurrencia.svg?style=svg)](https://circleci.com/gh/AriasAEnima/Taller-Concurrencia)
