@@ -90,7 +90,7 @@ public class CallableTest {
 
     
     @Test
-    public void test500_7Thread(){       
+    public void test300_7Thread(){       
         List<Future<String>> resultados;
         List<Callable<String>> hilos=new ArrayList<>();
         String firstmessage;
@@ -99,7 +99,7 @@ public class CallableTest {
             Thread s = new Thread(server);        
             s.start();            
             ExecutorService servicio= Executors.newCachedThreadPool();           
-            for (int i=1 ; i<=500; i++){
+            for (int i=1 ; i<=300; i++){
                 hilos.add(new CallableBrowser("hugeimg.jpg"));     
             }           
             long init = System.currentTimeMillis();    
@@ -115,14 +115,14 @@ public class CallableTest {
                     break;
                 }
             }           
-            test_Result+="===== Callable Test: Tiempo total de procesamiento test500_7Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
+            test_Result+="===== Callable Test: Tiempo total de procesamiento test300_7Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
         } catch(InterruptedException | ExecutionException ex) {
            fail(ex.toString());
         }
     } 
        
     @Test
-    public void test500_1Thread(){     
+    public void test300_1Thread(){     
         List<Callable<String>> hilos=new ArrayList<>();
         List<Future<String>> resultados;
         String firstmessage;
@@ -131,7 +131,7 @@ public class CallableTest {
             Thread s = new Thread(server);        
             s.start();            
             ExecutorService servicio= Executors.newCachedThreadPool();            
-            for (int i=1 ; i<=500; i++){
+            for (int i=1 ; i<=300; i++){
                 hilos.add(new CallableBrowser("hugeimg.jpg"));     
             }          
             long init = System.currentTimeMillis();  
@@ -147,7 +147,7 @@ public class CallableTest {
                     break;
                 }
             }           
-            test_Result+="===== Callable Test:  Tiempo total de procesamiento test500_1Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
+            test_Result+="===== Callable Test:  Tiempo total de procesamiento test300_1Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
         } catch(InterruptedException | ExecutionException ex) {
            fail(ex.toString());
         }    
