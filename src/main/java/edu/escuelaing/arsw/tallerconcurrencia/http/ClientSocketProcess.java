@@ -17,19 +17,21 @@ import java.net.Socket;
  * @author J. Eduardo Arias
  */
 public class ClientSocketProcess implements Runnable {
-    private Socket clientSocket;
+    private final Socket clientSocket;
 
     public ClientSocketProcess(Socket clientSocket) {        
          this.clientSocket=clientSocket;      
     }
     
- 
-
+    /**
+     * Una vez aceptado del socket del cliente, abre un BufferedReader
+     * y atrapa la petecion GET , utiliza el servicio de ChooseWriter
+     * y responde.
+     */
     @Override
     public void run() {
-            ResourceWriter rw=null;
-            try {                                 
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            ResourceWriter rw;
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))){                 
                 String path=getPath(in);    
                 rw = ResourceChooser.choose(path); 
                 rw.write(path, clientSocket);                    
@@ -40,7 +42,7 @@ public class ClientSocketProcess implements Runnable {
             }
     }
     
-           /**
+   /**
      * Captura el path de una peticion GET
      * @param in Buffer del Socket del Cliente
      * @return el path del archivo.

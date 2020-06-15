@@ -4,9 +4,6 @@
  * and open the template in the editor.
  */
 package edu.escuelaing.arsw.tallerconcurrencia.http.writer;
-
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

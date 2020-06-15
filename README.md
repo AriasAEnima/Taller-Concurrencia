@@ -68,18 +68,18 @@ Y podremos ver como el servidor le llega peticiones y el Browser renderiza corre
 ![Modelo](imagenesgit/modelo.PNG)
 
 Haciendo un recorrido de arriba hacia abajo:
-* Se aplico un patron Singleton perezoso en el ServerHttp que solo cambia de instancia si se requiere un numero de hilos diferentes, sin embargo siempre será una única instancia.
-* El server implementa Runnable para que en las pruebas no bloquee (pudo haberse creado una clase anonima Runnable con el Server pero opte por esto.).
-* El funcionanmiento del server es un patron "Thread Pool".
-* El server Http utiliza un pool de Threads Fixed (actualmente fijado en 7 si no se da este parametro). *Fixed con el fin de hacer pruebas interesantes cambiando este numero*.
+* Se aplico un patron Singleton perezoso en el ServerHttp.
+* El server implementa Runnable para que en las pruebas no bloquee (pudo haberse creado una clase anónima Runnable con el Server pero opte por esto.).
+* El funcionamiento del server es un patron "Thread Pool".
+* El server Http utiliza un newCachedThreadPool o un Fixed si se quiere. *Fixed con el fin de hacer pruebas interesantes cambiando este numero*.
 
 **Implementacion del server con hilos:**  
-Podemos observar que el una vez se termina la espera una petición se crea un hilo y se inicia, no se espera que termine de procesar esta peticion, en cambio se espera la siguiente petición y se crea otro hilo para que corra en parelelo si es necesario con peticiones anteriores.
+Podemos observar que una vez termina la espera de una petición se crea un hilo y se inicia, no se espera que termine de procesar esta petición, en cambio se espera la siguiente petición y se crea otro hilo para que corra en paralelo si es necesario junto a peticiones anteriores.
 
 ![Sever](imagenesgit/server.PNG)
 
 ![Constuctor](imagenesgit/constructor.PNG)
-* Se creara un ClientSocketProcess por cada peticion particular que llegue.
+* Se creara un ClientSocketProcess por cada petición particular que llegue.
 * El pool de threads le dará "start" a los ClientSocketProcess.
 * Los ClientSocketProcess utilizaran los servicios de ResourceChooser para escoger un ResourceWriter y ejecutarlo.
 * Se agregó un Writer de error que puede ser utilizado por los otros cuando no encuentren el archivo o desde el chooser si no se soporta el tipo de archivo.
@@ -97,16 +97,16 @@ Al igual que el taller anterior ([Taller Networking](https://github.com/AriasAEn
 
 Se realizo dos clases de pruebas una utilizando Runnables como Browsers y otra como Callables. (Son muy parecidas).
 
-La diferencia entre estas es como logre capturar el posible error (con una bandera o un Array de Future <"String"> ), en las Runnables les di start manualmente y en las Callables utilice un invokeAll (newCachedThreadPool) para iniciarlos.
+La diferencia entre estas es como logre capturar el posible error (con una bandera o con un Array de Future <"String"> ), en las Runnables les di start manualmente y en las Callables utilice un invokeAll (newCachedThreadPool) para iniciarlos.
 
-Los test consisten en cambiar el numero de Browser (200 o 500) pidiendo como recurso una imagen de 6MB y cambiar los hilos que atienden en el Server (1 o 7); También verificar que el Servidor da una respuesta negativa (por que no se encuentra el recurso o no se soporta) y en una prueba pequeña que podemos observar la respuesta del servidor de 3 tipos de archivos, (jpg, html y js).
+Los test consisten en cambiar el numero de Browser (200 o 500) pidiendo como recurso una imagen de 6MB y cambiar los hilos que atienden en el Server (1 o 7); También verificar que si el Servidor da una respuesta negativa (por que no se encuentra el recurso o no se soporta), y una prueba pequeña podemos observar la respuesta del servidor de 3 tipos de archivos, (jpg, html y js).
 
-Opte por que los browser no imprimieran la respuesta (excepto en la prueba pequeña), debido a que queria verificar la diferencia de tiempo del servidor cambiando los hilos que antendian para responder, no de los browser (clientes) para leer la respuesta.
+Opte por que los browser no imprimieran la respuesta (excepto en la prueba pequeña), debido a que quería verificar la diferencia de tiempo del servidor cambiando los hilos que atendían, no de los browser (clientes) para leer la respuesta.
 
 
 Aqui podemos el estilo de una prueba Callable:
 
-En esta el servidor tendrá  7 hilos para atender 500 peticiones.
+En este ejemplo el servidor tendrá  7 hilos para atender 500 peticiones.
 
 ![Test](imagenesgit/test.PNG)
 
@@ -130,9 +130,11 @@ Se encuentra en la carpeta
 
 ## Bibliografía
 
-The Thread Pool Pattern - DHolness. (2018, 14 mayo). Recuperado 13 de junio de 2020, de https://medium.com/@dholnessii/the-thread-pool-pattern-7227eb9ec2b6
+The Thread Pool Pattern - DHolness. (2018, 14 mayo). Recuperado 12 de junio de 2020, de https://medium.com/@dholnessii/the-thread-pool-pattern-7227eb9ec2b6
 
 Richard. (2017, 2 junio). Multitarea e Hilos en Java con ejemplos II (Runnable & Executors). Recuperado 12 de junio de 2020, de https://jarroba.com/multitarea-e-hilos-en-java-con-ejemplos-ii-runnable-executors/
+
+Caules, C. Á. (2016, 8 diciembre). Java Callable Interface y su uso. Recuperado 13 de junio de 2020, de https://www.arquitecturajava.com/java-callable-interface-y-su-uso/
 
 
 ## Licencia

@@ -5,21 +5,18 @@
  */
 package edu.escuelaing.arsw.tallerconcurrencia.http.writer;
 
-import edu.escuelaing.arsw.tallerconcurrencia.http.writer.ResourceWriter;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author J. Eduardo Arias
  */
 public class TextWriter implements ResourceWriter{    
-    private String type;
+    private final String type;
 
     public TextWriter(String type) {
         this.type = type;
@@ -32,9 +29,9 @@ public class TextWriter implements ResourceWriter{
      */
     @Override
     public void write(String file, Socket clientSocket) {
-        PrintWriter out=null;
+        PrintWriter out;
         try {
-            String outputLine="";
+            String outputLine;
             out = new PrintWriter(clientSocket.getOutputStream(), true);           
             BufferedReader bf = new BufferedReader(new FileReader("resources" + file));
             outputLine = "HTTP/1.1 200 OK\r\n";
@@ -48,10 +45,7 @@ public class TextWriter implements ResourceWriter{
             out.close();
         } catch (IOException ex) {
             new ErrorWriter("404 NOT FOUND").write("", clientSocket);
-        } finally {
-            out.close();
-        }
-        
+        }         
     }     
 
     @Override

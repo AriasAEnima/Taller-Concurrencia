@@ -6,24 +6,23 @@
 package edu.escuelaing.arsw.tallerconcurrencia.http;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.*;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- *
+ * Se hicieron pruebas de 200 y 500 Browser y con un servidor atentiendo
+ * con 1 o 7 hilos.
  * @author J. Eduardo Arias
  */
-public class ServerTest {
+public class ARunnableTest {
     private static String test_Result="";
     
     
     @Test
     public void testMustFailNotFound(){       
         try {
-            ServerHttp server = ServerHttp.getInstanceThreads(1);
+            ServerHttp server = ServerHttp.getTestServer(1);
             Thread s = new Thread(server);        
             s.start();          
             BrowserForTest k=new BrowserForTest("hugeimgs.jpg");
@@ -34,22 +33,22 @@ public class ServerTest {
             server.stop();
             s.join();          
             long fin = System.currentTimeMillis();	// Instante final del procesamiento            
-            test_Result+="===== Tiempo total de procesamiento testMustFailNotFound: "+(fin-init)+ " Milisegundos =====\n";
+            test_Result+="===== ServerTest: Tiempo total de procesamiento testMustFailNotFound: "+(fin-init)+ " Milisegundos"+k.message+ "=====\n";
             if(k.fail){
                 assertTrue(true);                
             }else{
                 fail(k.message);   
             }
             
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ServerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (InterruptedException ex) {
+            fail(ex.toString());
         }
     } 
     
     @Test
     public void testMustFailNotSuported(){       
         try {
-            ServerHttp server = ServerHttp.getInstanceThreads(1);
+            ServerHttp server = ServerHttp.getTestServer(1);
             Thread s = new Thread(server);        
             s.start();          
             BrowserForTest k=new BrowserForTest("hugeimg.ico");
@@ -60,15 +59,15 @@ public class ServerTest {
             server.stop();
             s.join();          
             long fin = System.currentTimeMillis();	// Instante final del procesamiento            
-            test_Result+="===== Tiempo total de procesamiento testMustFailNotSuported: "+(fin-init)+ " Milisegundos =====\n";
+            test_Result+="===== ServerTest: Tiempo total de procesamiento testMustFailNotSuported: "+(fin-init)+ " Milisegundos"+k.message+ "=====\n";
             if(k.fail){
                 assertTrue(true);                
             }else{
                 fail(k.message);   
             }
             
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ServerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (InterruptedException ex) {
+            fail(ex.toString());
         }
     } 
     
@@ -77,7 +76,7 @@ public class ServerTest {
     @Test
     public void test200_1Thread(){       
         try {
-            ServerHttp server = ServerHttp.getInstanceThreads(1);
+            ServerHttp server = ServerHttp.getTestServer(1);
             Thread s = new Thread(server);        
             s.start();
             List<Thread> hilosBrowser=new ArrayList<>();
@@ -98,23 +97,22 @@ public class ServerTest {
             server.stop();
             s.join();            
             long fin = System.currentTimeMillis();	// Instante final del procesamiento            
-            test_Result+="===== Tiempo total de procesamiento test200_1Thread: "+(fin-init)+ " Milisegundos =====\n";
+            test_Result+="===== ServerTest: Tiempo total de procesamiento test200_1Thread: "+(fin-init)+ " Milisegundos =====\n";
             for (BrowserForTest b: browsersForTest){
                 if(b.fail){
                     fail(b.message);
                 }           
                 break;
-            }
-           
+            }           
         } catch (InterruptedException ex) {
-            Logger.getLogger(ServerTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.toString());
         }
     }    
     
     @Test
     public void test200_7Thread(){       
         try {
-            ServerHttp server = ServerHttp.getInstanceThreads(7);
+            ServerHttp server = ServerHttp.getTestServer(7);
             Thread s = new Thread(server);        
             s.start();
             List<Thread> hilosBrowser=new ArrayList<>();
@@ -135,22 +133,22 @@ public class ServerTest {
             server.stop();
             s.join();               
             long fin = System.currentTimeMillis();	// Instante final del procesamiento            
-            test_Result+="===== Tiempo total de procesamiento test200_7Thread: "+(fin-init)+ " Milisegundos ===== \n";
+            test_Result+="===== ServerTest: Tiempo total de procesamiento test200_7Thread: "+(fin-init)+ " Milisegundos ===== \n";
             for (BrowserForTest b: browsersForTest){
                 if(b.fail){
                     fail(b.message);
                 }           
                 break;
             }
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ServerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (InterruptedException ex) {
+            fail(ex.toString());
         }
     } 
     
     @Test
     public void test500_7Thread(){       
         try {
-            ServerHttp server = ServerHttp.getInstanceThreads(7);
+            ServerHttp server = ServerHttp.getTestServer(7);
             Thread s = new Thread(server);        
             s.start();
             List<Thread> hilosBrowser=new ArrayList<>();
@@ -171,7 +169,7 @@ public class ServerTest {
             server.stop();
             s.join();           
             long fin = System.currentTimeMillis();	// Instante final del procesamiento            
-            test_Result+="===== Tiempo total de procesamiento test500_7Thread: "+(fin-init)+ " Milisegundos ===== \n";
+            test_Result+="===== ServerTest: Tiempo total de procesamiento test500_7Thread: "+(fin-init)+ " Milisegundos ===== \n";
             for (BrowserForTest b: browsersForTest){
                 if(b.fail){
                     fail(b.message);
@@ -179,7 +177,7 @@ public class ServerTest {
                 break;
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(ServerTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.toString());
         }
     } 
     
@@ -187,7 +185,7 @@ public class ServerTest {
     @Test
     public void test500_1Thread(){       
         try {
-            ServerHttp server = ServerHttp.getInstanceThreads(1);
+            ServerHttp server = ServerHttp.getTestServer(1);
             Thread s = new Thread(server);        
             s.start();
             List<Thread> hilosBrowser=new ArrayList<>();
@@ -208,7 +206,7 @@ public class ServerTest {
             server.stop();
             s.join();                    
             long fin = System.currentTimeMillis();	// Instante final del procesamiento            
-            test_Result+="===== Tiempo total de procesamiento test500_1Thread: "+(fin-init)+ " Milisegundos ===== \n";
+            test_Result+="===== ServerTest: Tiempo total de procesamiento test500_1Thread: "+(fin-init)+ " Milisegundos ===== \n";
             for (BrowserForTest b: browsersForTest){
                 if(b.fail){
                     fail(b.message);
@@ -216,12 +214,15 @@ public class ServerTest {
                 break;
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(ServerTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.toString());
         }
         
        
     }
-    
+    /**
+     * Imprime los tiempos de ejecucion y las respuestas generales de 
+     * las pruebas.
+     */
     @AfterClass
     public static void results(){
         System.out.println(test_Result);

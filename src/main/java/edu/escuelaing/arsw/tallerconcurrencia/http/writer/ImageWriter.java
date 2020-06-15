@@ -4,22 +4,19 @@
  * and open the template in the editor.
  */
 package edu.escuelaing.arsw.tallerconcurrencia.http.writer;
-
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  *
  * @author J. Eduardo Arias
  */
 public class ImageWriter implements ResourceWriter{
-    private String type;
+    private final String type;
     
     public ImageWriter(String type) {
         this.type = type;
@@ -32,7 +29,7 @@ public class ImageWriter implements ResourceWriter{
      */
     @Override
     public void write(String file,Socket clientSocket) {        
-        FileInputStream inputImage= null;
+        FileInputStream inputImage;
         try {
             File graphicResource= new File("resources" +file);
             inputImage = new FileInputStream(graphicResource);

@@ -11,58 +11,66 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-
 /**
  *
  * @author J. Eduardo Arias
  */
 public class ServerHttp implements Runnable {
     private static ServerHttp instance;
-    private static Object lock=new Object();
-    private static int nThread=0;
-    private boolean bandera;
+    private static final Object lock=new Object();
     private ExecutorService executor;
-    private  ServerSocket serverSocket=null;
+    private ServerSocket serverSocket=null;
     
+    /**
+     * Crea un Server con newCachedThreadPool
+     */
     private ServerHttp(){      
-        this(7);         
+        executor =Executors.newCachedThreadPool();         
+    }
+
+    /**
+     * Crea un Server con newFixedThreadPool
+     * @param n numero de hilos
+     */
+    private ServerHttp(int n){                 
+        executor = Executors.newFixedThreadPool(n);        
     }
     
-     private ServerHttp(int n){
-        bandera=true;
-        executor = Executors.newFixedThreadPool(n);          
-    }
-    
+    /**
+     * Mantiene el servidor corriendo hasta que el ServerSocket
+     * se cierra, por cada socket aceptado creara un hilo.
+     */
     @Override
-    public void run() {       
+    public void run() {        
         try {           
             serverSocket = new ServerSocket(35000);            
         } catch (IOException e) {
             System.err.println("Could not listen on port: 35000.");
             System.exit(1);
         }     
-        //System.out.println("Listo para recibir ...");       
-        while(bandera){           
-            synchronized(lock){
-                try {
-                    //System.out.println("Esperando ...");                
-                    Socket clientSocket = serverSocket.accept();
-                    Runnable process = new ClientSocketProcess(clientSocket);
-                    executor.execute(process);
-                } catch (IOException ex) {
-                    System.err.println(ex.getMessage()+": No se pudo iniciar el socket o este fue cerrado con proposito");
+        System.out.println("Listo para recibir ...");     
+        try {
+            while (true) {   
+                synchronized (lock) {
+                //System.out.println("Esperando ...");                
+                Socket clientSocket = serverSocket.accept();
+                Runnable process = new ClientSocketProcess(clientSocket);
+                executor.execute(process);
                 }
+                
             }
-        }            
+        } catch (IOException ex) {          
+            executor.shutdown();
+            while (!executor.isTerminated()) {
+                // Espero a que terminen de ejecutarse todos los procesos       	
+            }
+        }
     }
     
-      
-    public void stop() {
-        bandera = false;
-        executor.shutdown();	
-        while (!executor.isTerminated()) {
-            // Espero a que terminen de ejecutarse todos los procesos       	
-        }         
+    /**
+     * Cierra el socket y para el Server.
+     */ 
+    public void stop() {            
         try {
             serverSocket.close();
         } catch (IOException ex) {
@@ -71,26 +79,36 @@ public class ServerHttp implements Runnable {
     }
 
     /**
-     * Devuelve los recursos solicitados por un socket cliente
-     * @param args ninguno 
-     * @throws IOException si algo ocurre con los sockets
+     * Devuelve un Server con thread
+     * @param args ninguno      
      */
     public static void main(String[] args) {      
         getInstance().run();
     }    
     
+    /**
+     * Devuelve la instancia del Server
+     * @return Devuelve el server Cachedpool
+     */
+    
     public static ServerHttp getInstance(){      
-        if (instance==null){
-            instance=new ServerHttp();               
+        if(instance==null){
+            synchronized(ServerHttp.class){
+                instance=new ServerHttp();
+            }
         }
         return instance;
     }  
     
-    public static ServerHttp getInstanceThreads(int n){      
-        if (nThread!=n){
-            instance=new ServerHttp(n);               
-        }
-        return instance;
+    /**
+     * Este metodo SOLO es para pruebas se hace necesario,
+     * necesitaremos diferentes tipos de server.
+     * (rompe el patron singleton)
+     * @param n numero de hilos de server de prueba
+     * @return un server con n hilos para atender
+     */
+    public static ServerHttp getTestServer(int n){   
+        return new ServerHttp(n);      
     }  
    
 }

@@ -17,18 +17,25 @@ import java.util.logging.Logger;
  *
  * @author J. Eduardo Arias
  */
-public class ErrorWriter implements ResourceWriter{   
-    private String message;
+public class ErrorWriter implements ResourceWriter{ 
+  
+    private final String message;
    
+    /**
+     * @param message Codigo+info
+     */
     public ErrorWriter(String message ){        
         this.message=message;
     }
     
-   
+   /**
+    * Escribe un HTML con el mensaje del contructor al socket del cliente
+    * @param file Es ignorando este parametro en esta implementacion.
+    * @param clientSocket socket del cliente.
+    */
+    @Override
     public void write(String file, Socket clientSocket) {
-        PrintWriter out=null;
-        try {                       
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
+        try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
             String outputLine = "HTTP/1.1 "+message+"\r\n"
                     + "Content-Type: text/html\n"
                     + "\r\n"
@@ -46,8 +53,6 @@ public class ErrorWriter implements ResourceWriter{
             out.close();
         } catch (IOException ex) {
             Logger.getLogger(ErrorWriter.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            out.close();
         }
         
     }

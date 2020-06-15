@@ -16,33 +16,36 @@ import java.net.URL;
  * @author J. Eduardo Arias
  */
 public class BrowserForTest implements Runnable{
-    private String resource;
+    private final String resource;
     public boolean fail=false;
-    public String message="";
-    private static Object lock=new Object();
+    public String message="Correcto";  
 
     public BrowserForTest(String resource){
         this.resource=resource;
     }
-
+    /**
+     * Simula un Browser haciendo una peticion del path del recurso
+     * ingresado en el constructor.
+     */
     @Override
     public void run() {
-        URL google=null;
+         URL google;
         try {
             google= new URL("http://127.0.0.1:35000/"+resource);
-        } catch (MalformedURLException ex) {
-            System.err.println("Error en la URL");
-        }
-       try (BufferedReader reader
-                = new BufferedReader(new InputStreamReader(google.openStream()))) {
+            try (BufferedReader reader
+                    = new BufferedReader(new InputStreamReader(google.openStream()))) {
 //            String inputLine = null;           
 //            while ((inputLine = reader.readLine()) != null) {              
 //               // System.out.println(inputLine);
 //            }   
-        } catch (IOException ex) {            
-            fail=true;
-            message=ex.toString();            
+            } catch (IOException ex) {
+                fail = true;
+                message = ex.toString();
+            }               
+        } catch (MalformedURLException ex) {
+            System.err.println("Error en la URL");
         }
+      
     }
 }
 
