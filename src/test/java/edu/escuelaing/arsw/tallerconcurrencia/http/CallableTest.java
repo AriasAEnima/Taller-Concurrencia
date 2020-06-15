@@ -16,7 +16,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Se hicieron pruebas de 200 y 500 Browser y con un servidor atentiendo
+ * Se hicieron pruebas de 300 Browser y con un servidor atentiendo
  * con 1 o 7 hilos.
  * @author J. Eduardo Arias
  */

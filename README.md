@@ -95,20 +95,25 @@ Al igual que el taller anterior ([Taller Networking](https://github.com/AriasAEn
 
 [![CircleCI](https://circleci.com/gh/AriasAEnima/Taller-Concurrencia.svg?style=svg)](https://circleci.com/gh/AriasAEnima/Taller-Concurrencia)
 
-Se realizo dos clases de pruebas una utilizando Runnables como Browsers y otra como Callables. (Son muy parecidas).
+Se realizo pruebas una utilizando Callables como Browsers (300).
 
-La diferencia entre estas es como logre capturar el posible error (con una bandera o con un Array de Future <"String"> ), en las Runnables les di start manualmente y en las Callables utilice un invokeAll (newCachedThreadPool) para iniciarlos.
+Logre capturar el posible error con un Array de Future <"String">, y utilice un invokeAll (newCachedThreadPool) para iniciarlos.
 
-Los test consisten en cambiar el numero de Browser (200 o 500) pidiendo como recurso una imagen de 6MB y cambiar los hilos que atienden en el Server (1 o 7); También verificar que si el Servidor da una respuesta negativa (por que no se encuentra el recurso o no se soporta), y una prueba pequeña podemos observar la respuesta del servidor de 3 tipos de archivos, (jpg, html y js).
+Los test consisten pedir como recurso una imagen de 6MB y cambiar los hilos que atienden en el Server (1 o 7); También verificar que si el Servidor da una respuesta negativa (por que no se encuentra el recurso o no se soporta), y una prueba pequeña podemos observar la respuesta del servidor de 3 tipos de archivos, (jpg, html y js).
 
 Opte por que los browser no imprimieran la respuesta (excepto en la prueba pequeña), debido a que quería verificar la diferencia de tiempo del servidor cambiando los hilos que atendían, no de los browser (clientes) para leer la respuesta.
 
-
 Aqui podemos el estilo de una prueba Callable:
 
-En este ejemplo el servidor tendrá  7 hilos para atender 500 peticiones.
+En este ejemplo el servidor tendrá  7 hilos para atender 300 peticiones.
 
 ![Test](imagenesgit/test.PNG)
+
+Los resultados en CircleCI:
+
+![Circle](imagenesgit/circleci.PNG)
+
+Notamos una diferencia notable entre 7 y 1 hilo en el servidor de CircleCI.
 
 ## Comparando Hilos en el Server:
 
