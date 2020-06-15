@@ -86,42 +86,11 @@ public class CallableTest {
            fail(ex.toString());
         }
     } 
-    
-    
-    @Test
-    public void test200_1Thread(){       
-        List<Future<String>> resultados;
-        List<Callable<String>> hilos=new ArrayList<>();
-        String firstmessage;
-        try {
-            ServerHttp server = ServerHttp.getTestServer(1);
-            Thread s = new Thread(server);        
-            s.start();            
-            ExecutorService servicio= Executors.newCachedThreadPool();           
-            for (int i=1 ; i<=200; i++){
-                hilos.add(new CallableBrowser("hugeimg.jpg"));     
-            }       
-            long init = System.currentTimeMillis();    
-            resultados=servicio.invokeAll(hilos);                  
-            long fin = System.currentTimeMillis();	// Instante final del procesamiento   
-            server.stop();
-            s.join();                    
-            firstmessage=resultados.get(0).get();
-            for (Future<String>fs: resultados){
-                if (!fs.get().equals("Correcto")){
-                    fail("Algo fallo: "+fs.get());
-                    firstmessage="No funciono";
-                    break;
-                }
-            }           
-            test_Result+="===== Callable Test:  Tiempo total de procesamiento test200_1Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
-        }catch(InterruptedException | ExecutionException ex) {
-           fail(ex.toString());
-        }
-    }    
+       
+
     
     @Test
-    public void test200_7Thread(){       
+    public void test500_7Thread(){       
         List<Future<String>> resultados;
         List<Callable<String>> hilos=new ArrayList<>();
         String firstmessage;
@@ -129,15 +98,15 @@ public class CallableTest {
             ServerHttp server = ServerHttp.getTestServer(7);
             Thread s = new Thread(server);        
             s.start();            
-            ExecutorService servicio= Executors.newCachedThreadPool(); 
-            for (int i=1 ; i<=200; i++){
+            ExecutorService servicio= Executors.newCachedThreadPool();           
+            for (int i=1 ; i<=500; i++){
                 hilos.add(new CallableBrowser("hugeimg.jpg"));     
-            }                        
+            }           
             long init = System.currentTimeMillis();    
             resultados=servicio.invokeAll(hilos);
             long fin = System.currentTimeMillis();	// Instante final del procesamiento   
             server.stop();
-            s.join();              
+            s.join();            
             firstmessage=resultados.get(0).get();
             for (Future<String>fs: resultados){
                 if (!fs.get().equals("Correcto")){
@@ -146,12 +115,44 @@ public class CallableTest {
                     break;
                 }
             }           
-            test_Result+="===== Callable Test:  Tiempo total de procesamiento test200_7Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
+            test_Result+="===== Callable Test: Tiempo total de procesamiento test500_7Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
         } catch(InterruptedException | ExecutionException ex) {
            fail(ex.toString());
-        } 
+        }
     } 
-    
+       
+    @Test
+    public void test500_1Thread(){     
+        List<Callable<String>> hilos=new ArrayList<>();
+        List<Future<String>> resultados;
+        String firstmessage;
+        try {
+            ServerHttp server = ServerHttp.getTestServer(1);
+            Thread s = new Thread(server);        
+            s.start();            
+            ExecutorService servicio= Executors.newCachedThreadPool();            
+            for (int i=1 ; i<=500; i++){
+                hilos.add(new CallableBrowser("hugeimg.jpg"));     
+            }          
+            long init = System.currentTimeMillis();  
+            resultados=servicio.invokeAll(hilos);  
+            long fin = System.currentTimeMillis();	// Instante final del procesamiento   
+            server.stop();
+            s.join();     
+            firstmessage=resultados.get(0).get();
+            for (Future<String>fs: resultados){
+                if (!fs.get().equals("Correcto")){
+                    fail("Algo fallo: "+fs.get());
+                    firstmessage="No funciono";
+                    break;
+                }
+            }           
+            test_Result+="===== Callable Test:  Tiempo total de procesamiento test500_1Thread: "+(fin-init)+ " Milisegundos  , Mensaje: "+ firstmessage +" =====\n";   
+        } catch(InterruptedException | ExecutionException ex) {
+           fail(ex.toString());
+        }    
+    }
+   
     /**
      * Aqui podemos observar la respuesta del servidor para 3 tipos
      * de archivos jpg , js y html.
