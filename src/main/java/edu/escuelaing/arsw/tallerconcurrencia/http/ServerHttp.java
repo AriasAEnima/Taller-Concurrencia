@@ -42,10 +42,11 @@ public class ServerHttp implements Runnable {
      */
     @Override
     public void run() {        
+        int port=getPort();
         try {           
-            serverSocket = new ServerSocket(35000);            
+            serverSocket = new ServerSocket(port);            
         } catch (IOException e) {
-            System.err.println("Could not listen on port: 35000.");
+            System.err.println("Could not listen on port: "+port);
             System.exit(1);
         }     
         System.out.println("Listo para recibir ...");     
@@ -110,5 +111,12 @@ public class ServerHttp implements Runnable {
     public static ServerHttp getTestServer(int n){   
         return new ServerHttp(n);      
     }  
-   
+    
+    static int getPort() {
+        if (System.getenv("PORT") != null) {
+            return Integer.parseInt(System.getenv("PORT"));
+        }
+        return 35000;
+    }
+ 
 }

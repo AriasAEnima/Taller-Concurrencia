@@ -35,8 +35,8 @@ public class TextWriter implements ResourceWriter{
             out = new PrintWriter(clientSocket.getOutputStream(), true);           
             BufferedReader bf = new BufferedReader(new FileReader("resources" + file));
             outputLine = "HTTP/1.1 200 OK\r\n";
-            outputLine+="Content-Type: text/"+type+"\n";
-            outputLine+="\r\n";
+            outputLine+="Content-Type: text/"+type+"\r\n";
+            outputLine+="\r\n\r\n";
             String bfRead;
             while ((bfRead = bf.readLine()) != null) {
                 outputLine+=bfRead;
