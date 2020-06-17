@@ -2,6 +2,9 @@
 
 Son ejercicios con sockets en java terminando con una implementación concurrente de un web server utilizando sockets, actualmente puede "servir" archivos de Imagenes y Texto (png, jpg, css, js, html).
 
+Ya esta desplegado en Heroku:
+https://safe-lowlands-73138.herokuapp.com/Boxify/index.html
+
 ## Autor
 
 * **J. Eduardo Arias Barrera** - [AriasAEnima](https://github.com/AriasAEnima)
